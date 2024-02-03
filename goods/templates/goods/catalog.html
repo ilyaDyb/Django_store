@@ -47,6 +47,13 @@
         </form>
     </div>
 
+    {% if request.GET.q %}
+    <h3 class="mt-4">Результаты поиска по запросу {{ request.GET.q }}</h3>
+    {% if not goods %}
+    <h2 class="mt-4">По запросу ничего не найдено</h2>
+    {% endif %}
+    {% endif %}
+
 {% for product in goods %}
     <!-- Карта товара -->
     <div class="col-lg-4 col-md-6 p-4">
@@ -58,9 +65,25 @@
             {% endif %}
             <div class="card-body">
                 <a href="{% url "catalog:product" product.slug %}">
-                    <p class="card-title">{{ product.name }}</p>
+                    <p class="card-title">
+                        {% autoescape off %}
+                            {% if product.headline %}
+                            {{ product.headline }}
+                            {% else %}
+                            {{ product.name }}
+                            {% endif %}
+                        {% endautoescape %}
+                    </p>
                 </a>
-                <p class="card-text text-truncate">{{ product.description }}</p>
+                <p class="card-text text-truncate">
+                    {% autoescape off %}
+                    {% if product.bodyline %}
+                    {{ product.bodyline }}
+                    {% else %}
+                    {{ product.description }}
+                    {% endif %}
+                {% endautoescape %}
+                </p>
                 <p class="product_id">id: {{ product.product_id }}</p>
                 <div class="d-flex justify-content-between">
                     
@@ -86,6 +109,7 @@
 
 </div>
 <!-- Пагинация -->
+{% if goods %}
 <nav aria-label="Page navigation example">
     <ul class="pagination justify-content-center my-4">
         <div class="custom-shadow d-flex">
@@ -108,8 +132,8 @@
         </div>
     </ul>
 </nav>
+{% endif %}
 {% endblock%}
-
 
 {% comment "" %}
 {% block footer %}
