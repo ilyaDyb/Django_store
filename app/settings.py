@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'main',
     'goods',
     'users',
+    'carts',
     
 ]
 
@@ -149,3 +150,4 @@ INTERNAL_IPS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
+LOGIN_URL = "/user/login/"

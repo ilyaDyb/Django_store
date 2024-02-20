@@ -14,9 +14,13 @@ def login(request):
             username = request.POST['username']
             password = request.POST['password']
             user = auth.authenticate(username=username, password=password)
+
             if user:
                 auth.login(request, user)
                 messages.success(request, f"{username}, Вы вошли в аккаунт")
+                if request.GET.get('next', None):
+                    return HttpResponseRedirect(request.GET.get('next'))
+
                 return HttpResponseRedirect(reverse('main:index'))
     else:
         form = UserLoginForm()
@@ -65,6 +69,9 @@ def profile(request):
         "form": form
     }
     return render(request, 'users/profile.html', context)
+
+def users_cart(request):
+    return render(request, "users/users_cart.html")
 
 
 @login_required
