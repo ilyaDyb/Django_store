@@ -27,10 +27,12 @@
                     <!-- Разметка корзины -->
                     {% include "carts/includes/included_cart.html" %}
                     <!-- Закончилась разметка корзины -->
+                {% if carts %}   
+                    <a class="btn btn-dark" href="orders/create_order.html">
+                        Оформить заказ
+                    </a>
+                {% endif %}
                 </div>
-                <a class="btn btn-dark" href="orders/create_order.html">
-                    Оформить заказ
-                </a>
             </div>
         </div>
     </div>
