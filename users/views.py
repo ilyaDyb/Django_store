@@ -49,7 +49,6 @@ def registration(request):
 
             session_key = request.session.session_key
 
-
             user = form.instance
             auth.login(request, user)
 
@@ -88,7 +87,10 @@ def profile(request):
     return render(request, 'users/profile.html', context)
 
 def users_cart(request):
-    return render(request, "users/users_cart.html")
+    context = {
+        "check_current_page": False,
+        }
+    return render(request, "users/users_cart.html", context=context)
 
 
 @login_required

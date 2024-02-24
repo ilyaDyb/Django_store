@@ -4,7 +4,12 @@
 <div class="card mb-3 text-bg-light shadow-lg">
     {% for cart in carts %}
         <div class="card-header">
-            <h5 class="card-title">{{ cart.product.name }}</h5>
+            <h5 class="card-title"><a href="{% url "goods:product" cart.product.slug %}" style="text-decoration: 0; color: #000">
+                {{ cart.product.name }}</a>
+            </h5>
+        {% if check_current_page is none %}
+            <img src="{{ cart.product.image.url }}" alt="Product icon" width="150" height="150">
+        {% endif %}    
         </div>
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
