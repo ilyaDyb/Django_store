@@ -10,6 +10,7 @@ def index(request):
     context = {
         'title': "HOME - Главная",
         'content': "Магазин, который вы искали",
+        'margin_left': "margin-left:85px;",
         'categories': categories
     }
 

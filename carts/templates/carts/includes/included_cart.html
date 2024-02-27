@@ -8,7 +8,7 @@
                 {{ cart.product.name }}</a>
             </h5>
         {% if check_current_page is none %}
-            <img src="{{ cart.product.image.url }}" alt="Product icon" width="150" height="150">
+            <img src="{{ cart.product.image.url }}" alt="Product icon" width="220" height="150" style="{{ margin_left }};">
         {% endif %}    
         </div>
         <ul class="list-group list-group-flush">
