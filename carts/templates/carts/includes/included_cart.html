@@ -7,9 +7,9 @@
             <h5 class="card-title"><a href="{% url "goods:product" cart.product.slug %}" style="text-decoration: 0; color: #000">
                 {{ cart.product.name }}</a>
             </h5>
-        {% if check_current_page is none %}
+        {% if margin_left %}
             <img src="{{ cart.product.image.url }}" alt="Product icon" width="220" height="150" style="{{ margin_left }};">
-        {% endif %}    
+        {% endif %}
         </div>
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
