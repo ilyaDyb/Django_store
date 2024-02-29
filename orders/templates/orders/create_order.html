@@ -26,6 +26,7 @@
                     <div class="card mb-3">
                         <div class="card-body">
                             <form action="{% url "orders:create_order" %}" method="POST">
+                                {% csrf_token %}
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="id_first_name" class="form-label">Имя*:</label>
@@ -62,11 +63,17 @@
                                                 id="id_requires_delivery" value="1" checked>
                                             <label class="form-check-label" for="id_requires_delivery">Нужна
                                                 доставка</label>
+                                            {% if form.requires_delivery.errors %}
+                                                <div class="alert alert-danger alert-dismissible fade show">{{ form.requires_delivery.errors }}</div>
+                                            {% endif %}
                                         </div>
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="requires_delivery"
                                                 id="id_requires_delivery" value="0">
                                             <label class="form-check-label" for="id_requires_delivery">Самовывоз</label>
+                                            {% if form.requires_delivery.errors %}
+                                                <div class="alert alert-danger alert-dismissible fade show">{{ form.requires_delivery.errors }}</div>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="mb-3" id="deliveryAddressField">

@@ -82,7 +82,6 @@ def profile(request):
 
     context = {
         "title": "Home - Регистрация",
-        "margin_left": "margin-left:140px;",
         "form": form
     }
     return render(request, 'users/profile.html', context)
