@@ -2,12 +2,14 @@ from django.contrib import messages
 from django.db import transaction
 from django.forms import ValidationError
 from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import login_required
 from carts.models import Cart
 
 from orders.forms import CreateOrderForm
 from orders.models import Order, OrderItem
 
 
+@login_required
 def create_order(request):
     if request.method == "POST":
         form = CreateOrderForm(data=request.POST)
@@ -23,18 +25,20 @@ def create_order(request):
                             phone_number=form.cleaned_data["phone_number"],
                             requires_delivery=form.cleaned_data["requires_delivery"],
                             delivery_address=form.cleaned_data["delivery_address"],
-                            payment_on_get=form.cleaned_data["payment_on_get"]
+                            payment_on_get=form.cleaned_data["payment_on_get"],
                         )
                         for cart_item in cart_items:
                             product = cart_item.product
                             name = cart_item.product.name
-                            price= cart_item.product.sell_price()
+                            price = cart_item.product.sell_price()
                             quantity = cart_item.quantity
 
                             if product.quantity < quantity:
-                                raise ValidationError(f"Недостаточно товара {name} на складе\
-                                                      В Наличии = {product.quantity}")
-                            
+                                raise ValidationError(
+                                    f"Недостаточно товара {name} на складе\
+                                                      В Наличии = {product.quantity}"
+                                )
+
                             OrderItem.objects.create(
                                 order=order,
                                 product=product,
@@ -52,7 +56,7 @@ def create_order(request):
             except ValidationError as e:
                 messages.warning(request, str(e))
                 return redirect("orders:create_order")
-            
+
     else:
         initial = {
             "first_name": request.user.first_name,
@@ -61,8 +65,5 @@ def create_order(request):
 
         form = CreateOrderForm(initial=initial)
 
-    context = {
-        "title": "HOME - Оформление заказа",
-        "form": form,
-    }
+    context = {"title": "HOME - Оформление заказа", "form": form, "order": True}
     return render(request, "orders/create_order.html", context=context)
