@@ -26,7 +26,7 @@ class CreateOrderForm(forms.Form):
         if not data.isdigit():
             raise forms.ValidationError("Телефон должен содержать только цифры")
 
-        pattern = re.compile(r"^d{10}")
+        pattern = re.compile(r"^\d{10}")
 
         if not pattern.match(data):
             raise forms.ValidationError("Неверный формат номера")       
