@@ -11,6 +11,8 @@ def catalog(request, category_slug=None):
     on_sale = request.GET.get('on_sale', None)
     order_by = request.GET.get('order_by', None)
     query = request.GET.get('q', None)
+    price_start = request.GET.get("price_start", None)
+    price_end = request.GET.get("price_end", None)
 
 
     if category_slug == "all":
@@ -23,8 +25,14 @@ def catalog(request, category_slug=None):
     if on_sale:
         goods = goods.filter(discount__gt=0)
 
+    if price_start or price_end:
+        if price_start and price_end:
+            goods = goods.filter(price__gte=price_start).filter(price__lte=price_end)
+
     if order_by and order_by != 'default':
         goods = goods.order_by(order_by)
+    
+
 
     paginator = Paginator(goods, 6)
     current_page = paginator.page(int(page))   
