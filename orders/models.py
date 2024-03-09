@@ -23,6 +23,7 @@ class Order(models.Model):
     payment_on_get = models.BooleanField(default=False, verbose_name="Оплата при получении")
     is_paid = models.BooleanField(default=False, verbose_name="Оплачено")
     status = models.CharField(max_length=50, default="В обработке", verbose_name="Статус заказа")
+    stripe_checkout_id = models.CharField(max_length=500, default=False)
 
     class Meta:
         db_table = "order"

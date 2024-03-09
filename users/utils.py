@@ -15,7 +15,6 @@ def send_email_for_confirmation(email, unique_code):
     server.starttls()
 
     try:
-        verification_link = f""
         message = f"Your varification code: {unique_code}"
         server.login(sender, password)
         msg = MIMEText(message)

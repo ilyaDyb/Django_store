@@ -1,0 +1,15 @@
+{% load static %}
+<link rel="stylesheet" href="{% static "payment_pages/style.css" %}">
+<title>HOME - Успешно</title>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="message-box _success" style="width:400px;">
+                 <i class="fa fa-check-circle" aria-hidden="true"></i>
+                <h2> Your payment was successful </h2>
+               <p> Thank you for your payment. we will <br>
+be in contact with more details shortly </p>     
+            <h2 style="margin-top:20px;"><a class="home-page" href="{% url "main:index" %}" style="text-decoration:1; font-size:20px;">Вернуться на главную</a></h2>
+        </div> 
+    </div> 
+</div> 
