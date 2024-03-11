@@ -18,6 +18,7 @@ def send_email_for_confirmation(email, unique_code):
         message = f"Your varification code: {unique_code}"
         server.login(sender, password)
         msg = MIMEText(message)
+        msg["From"] = "Home Furniture"
         msg["Subject"] = "Verification code"
         server.sendmail(sender, email, msg.as_string())
 

@@ -3,15 +3,20 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, User
 
 from users.models import User
 
-class UserLoginForm(AuthenticationForm):
-    class Meta:
-        model = User
-        fields = [
-            'username', 'password'
-        ]
 
-        
+def email_no(value):
+    try:
+        user_mail = User.objects.get(email=value)
+        raise forms.ValidationError("Такая почта уже существует")
+    except User.DoesNotExist:
+        pass
+
+
 class UserRegistrationForm(UserCreationForm):
+    username = forms.CharField()
+    email = forms.EmailField(validators=[email_no])
+    password1 = forms.CharField()
+    password2 = forms.CharField()
     class Meta:
         model = User
         fields = [
@@ -20,10 +25,15 @@ class UserRegistrationForm(UserCreationForm):
             "password1",
             "password2",
         ]
-        username = forms.CharField()
-        email = forms.CharField()
-        password1 = forms.CharField()
-        password2 = forms.CharField()
+
+
+
+class UserLoginForm(AuthenticationForm):
+    class Meta:
+        model = User
+        fields = [
+            'username', 'password'
+        ]
 
 
 class ProfileForm(UserChangeForm):

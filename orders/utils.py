@@ -24,7 +24,7 @@ def send_email_payment_check(email, price, date):
         template = template.replace("{{ date }}", str(formatted_date))
         server.login(sender, password)
         msg = MIMEText(template, "html")
-        msg["From"] = sender
+        msg["From"] = "Home Furniture"
         msg["to"] = email
         msg["Subject"] = "Verification check"
         server.sendmail(sender, email, msg.as_string())
