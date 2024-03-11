@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 from carts.models import Cart
 import stripe
 from django.views.decorators.csrf import csrf_exempt
+from django.core.cache import cache
+from orders.utils import send_email_payment_check
 
 from orders.forms import CreateOrderForm
 from orders.models import Order, OrderItem
@@ -70,6 +72,7 @@ def create_order(request):
                 price_list = []
                 quantity_list = []
                 names_list = []
+
                 try:
                     with transaction.atomic():
                         user = request.user
@@ -94,6 +97,7 @@ def create_order(request):
                                 price_list.append(price * quantity)
                                 names_list.append(name)
                                 quantity_list.append(quantity)
+                                
 
                                 if product.quantity < quantity:
                                     raise ValidationError(
@@ -131,7 +135,7 @@ def create_order(request):
                                 mode="payment",
                                 customer_creation="always",
                                 success_url=settings.DOMAIN
-                                + "/orders/payment_successful?session_id={CHECKOUT_SESSION_ID}",
+                                + "/orders/payment_successful?session_id={CHECKOUT_SESSION_ID}&order_id=" + f"{order.id}&price={sum(price_list)}",
                                 cancel_url=settings.DOMAIN
                                 + f"/orders/payment_cancelled",
                             )
@@ -157,12 +161,14 @@ def create_order(request):
 
 
 def payment_successful(request):
+    key = request.GET.get("order_id")
+    cache.add(key=key, value=request.GET.get("price"), timeout=60)
     stripe.api_key = settings.STRIPE_SECRET_KEY
     checkout_session_id = request.GET.get("session_id", None)
     session = stripe.checkout.Session.retrieve(checkout_session_id)
     customer = stripe.Customer.retrieve(session.customer)
     user_id = request.user.id
-    print(customer)
+    # print(customer)
     user_payment = Order.objects.filter(
         payment_on_get=False, is_paid=False, user=user_id
     ).order_by("-id")[0]
@@ -181,6 +187,10 @@ def payment_successful(request):
             product.save()
 
         user_cart_items.delete()
+    price = cache.get(key=key)
+    date = customer["created"]
+
+    send_email_payment_check(email=customer["email"], price=price, date=date)
 
     return render(request, "orders/payment_successful.html", {"customer": customer})
 
@@ -190,39 +200,3 @@ def payment_cancelled(request):
     return render(request, "orders/payment_cancelled.html")
 
 
-@csrf_exempt
-def payment_stripe_webhook(request):
-    stripe.api_key = settings.STRIPE_SECRET_KEY
-    payload = request.body
-    signature_header = request.META["HTTP_STRIPE_SIGNATURE"]
-    event = None
-
-    try:
-        event = stripe.Webhook.construct_event(
-            payload, signature_header, stripe.api_key
-        )
-    except ValueError as e:
-        return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError as e:
-        return HttpResponse(status=400)
-    if event["type"] == "checkout.session.completed":
-        session = event["data"]["object"]
-        session_id = session.get("id", None)
-
-        order = Order.objects.get(stripe_checkout_id=session_id)
-
-        user = request.user
-        cart_items = Cart.objects.filter(user=user)
-
-        if cart_items.exists():
-            for cart_item in cart_items:
-                product = cart_item.product
-                quantity = cart_item.quantity
-
-                product.quantity -= quantity
-                product.save()
-
-            cart_items.delete()
-    order.is_paid = True
-    order.save()
-    return HttpResponse(status=200)

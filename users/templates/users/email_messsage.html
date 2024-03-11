@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чек оплаты</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .payment-receipt {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .payment-receipt h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .payment-receipt p {
+            color: #555;
+            margin: 10px 0;
+        }
+
+        .amount {
+            font-size: 1.2em;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .date {
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-receipt">
+        <h2>Чек оплаты</h2>
+        <p>Спасибо за оплату!</p>
+        <p class="amount">Сумма оплаты: ${{ price }}</p>
+        <p class="date">Дата: {{ date }}</p>
+    </div>
+</body>
+</html>

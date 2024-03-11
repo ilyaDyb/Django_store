@@ -50,7 +50,7 @@
                             <input type="email" class="form-control" id="id_email"
                                 value="{% if form.email.value %}{{ form.email.value }}{% endif %}"
                                 name="email"
-                                placeholder="Введите ваш gmail" required>
+                                placeholder="Введите ваш email" required>
                                 {% if form.email.errors %}
                                 <div class="alert alert-danger alert-dismissible fade show">{{ form.email.errors }}</div>
                                 {% endif %}
