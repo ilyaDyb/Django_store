@@ -1,13 +1,9 @@
 import random
 import smtplib
-from django.core.cache import cache
-
-from django.core.exceptions import ImproperlyConfigured
-from django.conf import settings
 from email.mime.text import MIMEText
 
 
-def send_email_for_confirmation(email, unique_code):
+def send_email_for_confirmation(email, unique_code=None, link_for_confirm=None):
     sender = "ilyachannel1.0@gmail.com"
     password = "pqtt inbm vjcc psrv"
 
@@ -15,11 +11,16 @@ def send_email_for_confirmation(email, unique_code):
     server.starttls()
 
     try:
-        message = f"Your varification code: {unique_code}"
         server.login(sender, password)
+
+        if unique_code:
+            message = f"Your varification code: {unique_code}"
+        elif link_for_confirm:
+            message = f"Your link for confirm: {link_for_confirm}"
+
         msg = MIMEText(message)
         msg["From"] = "Home Furniture"
-        msg["Subject"] = "Verification code"
+        msg["Subject"] = "Confirm your email"
         server.sendmail(sender, email, msg.as_string())
 
         return "The message was sent successfully!"

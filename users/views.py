@@ -1,12 +1,15 @@
-import email
 from django.contrib.auth.decorators import login_required
-from django.contrib import auth, messages, sessions
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib import auth, messages
 from django.db.models import Prefetch
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from carts.models import Cart
 from orders.models import Order, OrderItem
+from django.conf import settings
 
 from users.forms import ProfileForm, UserLoginForm, UserRegistrationForm
 from users.models import TemporaryUser, User
@@ -146,3 +149,48 @@ def logout(request):
     messages.success(request, f"{request.user.username}, Вы успешно вышли")
     auth.logout(request)
     return redirect(reverse("main:index"))
+
+
+def reset_password_write_email(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        try:
+            user = User.objects.get(email=email)
+        except Exception as ex:
+            messages.warning(request, "Пользователя с такой почтой не существует")
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        link_for_confirm = settings.DOMAIN + reverse("users:reset_password_end", kwargs={"uidb64":uid, "token":token})
+        send_email_for_confirmation(email=email, link_for_confirm=link_for_confirm)
+        return redirect(reverse("user:confirm_email"))
+    return render(request, "users/reset_password/write_email.html")
+
+
+def reset_password_end(request, uidb64, token):
+    if request.method == "POST":    
+        print("request_post: TRUE")
+        try:
+            uid = urlsafe_base64_decode(uidb64)
+            user = User.objects.get(pk=str(uid.decode('utf-8')))
+
+        except (TypeError, ValueError, User.DoesNotExist, OverflowError) as e:
+            user = None
+            print(e)
+
+        if user is not None and default_token_generator.check_token(user, token):
+            password1 = request.POST.get("password1")
+            password2 = request.POST.get("password2")
+
+            if password1 == password2:
+                user.set_password(password1)
+                user.save()
+                return redirect(reverse("user:login"))
+            
+            else:
+                messages.warning(request, "Пароли не совпадают. Пожалуйста,введите пароли заново")
+                return redirect(reverse("users:reset_password_end"))
+            
+    return render(request, "users/reset_password/reset_password.html", {"uidb64": uidb64, "token": token})
+
+def confirm_email(request):
+    return render(request, "users/reset_password/confirm_email.html")
