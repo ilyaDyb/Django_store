@@ -1,0 +1,91 @@
+<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+<style>
+    @import "compass/css3";
+
+    body {
+        background-color: #fff; /* Изменил цвет фона на белый */
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    
+    input {
+        display: none;
+    }
+
+    label {
+        cursor: pointer;
+        font-size: 40px;
+        color: yellow;
+        display: block;
+        width: 50px;
+        height: 50px;
+        line-height: 60px;
+        text-align: center;
+        float: left;
+        @include transition(all .2s);
+        @include text-shadow(0 3px 3px darken(#34495e, 5%));
+
+        &:hover {
+            font-size: 50px;
+            color: #FFF;
+            @include text-shadow(0 0 5px lighten(#34495e, 50%));
+        }
+
+        &:before {
+            display: inline;
+            width: auto;
+            height: auto;
+            line-height: normal;
+            vertical-align: baseline;
+            margin-top: 0;
+            font-family: FontAwesome;
+            font-weight: normal;
+            font-style: normal;
+            text-decoration: inherit;
+            -webkit-font-smoothing: antialiased;
+            content: "\f005";
+            color: #ffae00; /* Изменил цвет звезды на синий */
+            @include border(1px solid #3498db); /* Добавил обводку */
+            border-radius: 5px; /* Добавил скругление углов */
+            padding: 5px; /* Добавил отступ вокруг звезды */
+        }
+    }
+
+    input:checked + label ~ label {
+        &:before {
+            content: "\f006";
+        }
+    }
+
+    #wrapper {
+        display: inline-block;
+        &:hover {
+            label {
+                &:before {
+                    content: "\f005";
+                }
+                &:hover {
+                    & ~ label:before {
+                        content: "\f006";
+                    }
+                }
+            }
+        }
+    }
+</style>
+{% if request.user.is_authenticated %}
+<div id="wrapper">
+    <form action="{% url "goods:product" slug=product.slug %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" id="star1" name="star" value="1" />
+        <label for="star1"></label>
+        <input type="submit" id="star2" name="star" value="2" />
+        <label for="star2"></label>
+        <input type="submit" id="star3" name="star" value="3" />
+        <label for="star3"></label>
+        <input type="submit" id="star4" name="star" value="4" />
+        <label for="star4"></label>
+        <input type="submit" id="star5" name="star" value="5" />
+        <label for="star5"></label>
+    </form>
+</div>
+{% endif %}

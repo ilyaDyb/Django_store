@@ -198,5 +198,3 @@ def payment_successful(request):
 def payment_cancelled(request):
     print(request)
     return render(request, "orders/payment_cancelled.html")
-
-
