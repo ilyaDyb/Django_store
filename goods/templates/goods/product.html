@@ -51,11 +51,9 @@
             {% csrf_token %}
             Добавить в корзину</a>
 
-            {% comment %} Добавить проверку на то, что у пользователя куплен этот товар {% endcomment %}
-
             {% if user_rating %}
                 <p>Вы уже оценили этот товар :)</p>
-            {% else %}
+            {% elif not user_rating and order_item %}
                 <div>
                     {% include "includes/do_rate.html" %}
                 </div>
