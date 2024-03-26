@@ -93,6 +93,14 @@
                         <!-- Закончилась разметка корзины -->
                     </div>
                 </div>
+                <div class=" bg-white p-4 mb-4 mx-2 rounded custom-shadow">
+                    {% if not user.two_step_auth %}
+                        <span style="font-size:25px;"><img src="{% static "deps/icons/lock.png" %}" width="32" height="32"> You should enable Two-step aunthentication.</span>
+                        <a class="btn btn-info" href="{% url "users:write_phone_number" %}">Do you want to go through?</a>
+                    {% else %}
+                        <span style="font-size:25px;"><img src="{% static "deps/icons/lock.png" %}" width="32" height="32">You are under reliable protection</span>
+                    {% endif %}
+                </div>
             </div>
             <!-- Оформленные заказы -->
             <div class="col-md-12">

@@ -2,18 +2,18 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib import auth, messages
 from django.db.models import Prefetch
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.conf import settings
+from django.core.cache import cache
+
 from carts.models import Cart
 from orders.models import Order, OrderItem
-from django.conf import settings
-
 from users.forms import ProfileForm, UserLoginForm, UserRegistrationForm
 from users.models import TemporaryUser, User
-
 from users.utils import generate_unique_code, send_email_for_confirmation
 
 
@@ -88,7 +88,7 @@ def verify_email(request, user_id):
             # Уникальный код верен, регистрируем пользователя
             user = (
                 temporary_user.convert_to_user()
-            )  # Замените этот метод на ваш способ создания пользователя
+            )
             user.save()
             auth.login(request, user)
             temporary_user.delete()
@@ -133,7 +133,8 @@ def profile(request):
         )
         .order_by("-id")
     )
-    context = {"title": "Home - Регистрация", "form": form, "orders": orders}
+    user = request.user
+    context = {"title": "Home - Регистрация", "form": form, "orders": orders, "user": user}
     return render(request, "users/profile.html", context)
 
 
@@ -192,5 +193,51 @@ def reset_password_end(request, uidb64, token):
             
     return render(request, "users/reset_password/reset_password.html", {"uidb64": uidb64, "token": token})
 
+
 def confirm_email(request):
     return render(request, "users/reset_password/confirm_email.html")
+
+
+def write_phone_number(request):
+    return render(request, "users/two_step_auth/write_phone_number.html")
+
+
+def confirm_phone_number(request):
+    if request.method == "POST":
+        phone_number = request.POST.get("phone_number")
+        if len(phone_number) < 11 or len(phone_number) > 11:
+            messages.warning(request, "Неверный номер телефона")
+            return redirect(reverse("users:write_phone_number"))
+        else:
+            code = generate_unique_code()
+            cache.add(key=f"code_for_{request.user.id}", value=code, timeout=60)
+            cache.add(key=f"phone_number_{request.user.id}", value=phone_number, timeout=60)
+            return render(request, "users/two_step_auth/confirm_phone_number.html", context={"code": code})
+    else:
+        return HttpResponse(status=404)
+    
+
+def final_step_phone_number(request):
+    if request.method == "POST":
+        key_for_code = f"code_for_{request.user.id}"
+        key_for_phone = f"phone_number_{request.user.id}"
+        code_from_user = request.POST.get("ver_code")
+        code = cache.get(key=key_for_code)
+        phone_number = cache.get(key=key_for_phone)
+
+        if code_from_user == code:
+            cache.delete(key=key_for_code)
+            user = request.user
+            user.phone_number = phone_number
+            user.two_step_auth = True
+            user.save()
+            cache.delete(key=key_for_phone)
+            messages.success(request, "Вы успешно подкулючили A2P")
+            return redirect(reverse("users:profile"))
+        
+        else:
+            messages.warning(request, "Неправильный код")
+            return redirect(reverse("users:write_phone_number"))
+
+    else:
+        return HttpResponse(status=404)

@@ -1,0 +1,50 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static "deps/css/bootstrap/bootstrap.min.css" %}">
+    <link rel="stylesheet" href="{% static "verify_gmail\style.css" %}" />
+    <script src="{% static "deps/js/jquery/jquery-3.7.0.min.js" %}"></script>
+    <title>A2P</title>
+  </head>
+  <body>
+
+      <div class="container" style="height:300px;">
+        <h2>Verify</h2>
+        <p style="font-size:20px;">Here is your code. He is here because it is very difficult to activate a number on a special website to send SMS to your phone number.
+             <br/> <h2><b>{{ code }}</b></h2></p>
+             <form action="{% url "users:final_step_phone_number" %}" method="post">
+                {% csrf_token %}
+                <input type="text" name="ver_code" id="id_ver_code">
+                <button type="submit" class="btn btn-primary">Continue</button>
+             </form>
+
+        {% comment %} <h2 style="color:#0abab5;">{{ email }}</h2> {% endcomment %}
+      </div>
+      {% comment %} <script>
+        $(document).on("click", ".btn btn-primary", function(e){
+            e.preventDefault();
+            var url = $(this).attr("href")
+            var code = parseInt($("#id_ver_code").val())
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    code: code,
+                    csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken]").val(),
+                },
+                success: function(data){
+                    console.log("Success")
+                },
+                error: function(data){
+                    console.log("Error")
+                },
+            });
+        });
+      </script> {% endcomment %}
+  </body>
+</html>

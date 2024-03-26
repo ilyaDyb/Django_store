@@ -6,10 +6,10 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from carts.models import Cart
-import stripe
-from django.views.decorators.csrf import csrf_exempt
 from django.core.cache import cache
 from orders.utils import send_email_payment_check
+
+import stripe
 
 from orders.forms import CreateOrderForm
 from orders.models import Order, OrderItem
@@ -120,12 +120,7 @@ def create_order(request):
                                             "currency": "usd",
                                             "unit_amount": int(sum(price_list) * 100),
                                             "product_data": {
-                                                "name": ", ".join(
-                                                    str(x) for x in names_list
-                                                )
-                                                + "\n Количество "
-                                                + ", ".join(
-                                                    str(x) for x in quantity_list
+                                                "name": ", ".join(str(x) for x in names_list)+ "\n Количество "+ ", ".join( str(x) for x in quantity_list
                                                 ),
                                             },
                                         },

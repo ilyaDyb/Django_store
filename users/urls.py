@@ -14,4 +14,7 @@ urlpatterns = [
     path("reset_password_start/", views.reset_password_write_email, name="reset_password_write_email"),
     path("reset_password_end/<str:uidb64>/<str:token>/", views.reset_password_end, name="reset_password_end"),
     path("confirm_email/", views.confirm_email, name="confirm_email"),
+    path("write-phone-number/", views.write_phone_number, name="write_phone_number"),
+    path("confirm-phone-number/", views.confirm_phone_number, name="confirm_phone_number"),
+    path("final-step-phone-number/", views.final_step_phone_number, name="final_step_phone_number"),
 ]

@@ -4,17 +4,9 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, User
 from users.models import User
 
 
-def email_no(value):
-    try:
-        user_mail = User.objects.get(email=value)
-        raise forms.ValidationError("Такая почта уже существует")
-    except User.DoesNotExist:
-        pass
-
-
 class UserRegistrationForm(UserCreationForm):
     username = forms.CharField()
-    email = forms.EmailField(validators=[email_no])
+    email = forms.EmailField()
     password1 = forms.CharField()
     password2 = forms.CharField()
     class Meta:
@@ -25,7 +17,12 @@ class UserRegistrationForm(UserCreationForm):
             "password1",
             "password2",
         ]
-
+    
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("A user with such email already exists")
+        return email
 
 
 class UserLoginForm(AuthenticationForm):

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block content %}
+<div class="row">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-9 bg-white p-4 mb-5 mx-2 rounded custom-shadow">
+                <h2 class="text-center mb-4">Two-step authentication</h2>
+                <form action="{% url "users:confirm_phone_number" %}" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_email" class="form-label">Phone number</label>
+                            <input type="phone_number" class="form-control" id="id_phone_number"
+                                value="{% if form.email.value %}{{ form.phone_number.value }}{% endif %}"
+                                name="phone_number"
+                                placeholder="Введите ваш номер телефона" required>
+                                {% if form.phone_number.errors %}
+                                <div class="alert alert-danger alert-dismissible fade show">{{ form.phone_number.errors }}</div>
+                                {% endif %}
+                        </div>
+                        <button type="submit"
+                        class="btn btn-dark btn-block">Продолжить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

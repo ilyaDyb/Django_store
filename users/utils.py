@@ -1,6 +1,9 @@
+import os
 import random
 import smtplib
 from email.mime.text import MIMEText
+from dotenv import load_dotenv
+from twilio.rest import Client
 
 
 def send_email_for_confirmation(email, unique_code=None, link_for_confirm=None):
@@ -31,3 +34,20 @@ def send_email_for_confirmation(email, unique_code=None, link_for_confirm=None):
 # Генерация уникального кода (ваш способ)
 def generate_unique_code():
     return str(random.randint(100000, 999999))
+
+
+# def sending_sms(text, receiver):
+#     load_dotenv()
+#     try:
+#         account_sid = os.getenv("ACCOUNT_SID")
+#         auth_token = os.getenv("AUTH_TOKEN")
+#         client = Client(account_sid, auth_token)
+#         message = client.messages.create(
+#             body=text,
+#             from_="+***********",
+#             to=receiver
+#         )
+#     except Exception as ex:
+#         return ex
+    
+# print(sending_sms(text="Получилось", receiver="+***********"))

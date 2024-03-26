@@ -1,9 +1,9 @@
 from django.core.paginator import Paginator
-from django.shortcuts import get_list_or_404, render
+from django.shortcuts import render
 
 from goods.models import Products, Rating
 from goods.utils import q_search
-from orders.models import Order, OrderItem
+from orders.models import OrderItem
 
 
 def catalog(request, category_slug=None):
@@ -58,7 +58,7 @@ def product(request, slug):
         
         user_rating = Rating.objects.filter(user=request.user, product=product)
 
-        order_item = OrderItem.objects.filter(product=product).order_by("-id").first()
+        order_item = OrderItem.objects.filter(product=product, order__is_paid=True).order_by("-id").first()
 
         context = {
             'product': product,
